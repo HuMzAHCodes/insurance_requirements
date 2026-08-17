@@ -10,6 +10,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(BASE_DIR, 'model', 'model.pkl'), 'rb') as f:
     model = pickle.load(f)
+    
+    
+    # this is manulay , but we have mlflow that tracks the model verisons
+    MODEL_VERSION="1.0.0"
 
 app = FastAPI()
 
@@ -77,7 +81,24 @@ class UserInput(BaseModel):
     def normalize_city(cls,v:str):
       v=v.stripe().tittle()  
       return v
-
+  
+  
+    #  human readable
+    @app.get("/")
+    def home():
+     return{"message":"home of our api"}
+ 
+    # machine readable
+    @app.get("/health")
+    def check_health():
+         return{"message":"OK!",
+                "version":MODEL_VERSION}
+     
+     
+ 
+ 
+ 
+ 
 @app.post('/predict')
 def predict_premium(data: UserInput):
 
