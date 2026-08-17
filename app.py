@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field,field_validator
 from typing import Literal, Annotated
 import pickle
 import pandas as pd
+import os
 
-# import the ml model
-with open('model.pkl', 'rb') as f:
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(BASE_DIR, 'model', 'model.pkl'), 'rb') as f:
     model = pickle.load(f)
 
 app = FastAPI()
@@ -68,6 +70,13 @@ class UserInput(BaseModel):
             return 2
         else:
             return 3
+        
+        
+    @field_validator("city")
+    @classmethod
+    def normalize_city(cls,v:str):
+      v=v.stripe().tittle()  
+      return v
 
 @app.post('/predict')
 def predict_premium(data: UserInput):
