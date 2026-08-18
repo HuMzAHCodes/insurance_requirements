@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from model.predict import predict_output,model,MODEL_VERSION
+from model.predict import predict_output, model, MODEL_VERSION
 from schema.user_input import UserInput
-
 
 
 app = FastAPI()
@@ -35,6 +34,9 @@ def predict_premium(data: UserInput):
         'occupation': data.occupation
     }
 
-    prediction = predict_output(user_input)
+    try:
+        prediction = predict_output(user_input)
+        return JSONResponse(status_code=200, content={'response': prediction})
 
-    return JSONResponse(status_code=200, content={'predicted_category': prediction})
+    except Exception as e:
+        return JSONResponse(status_code=500, content=str(e))
